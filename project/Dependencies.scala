@@ -13,6 +13,7 @@ object Dependencies {
   ).map(_ % "test")
 
   lazy val datasourceDependencies = commonMainDependencies ++ commonTestDependencies
+  lazy val commonDependencies = commonMainDependencies ++ commonTestDependencies
 
 }
 

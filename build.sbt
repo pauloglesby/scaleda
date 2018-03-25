@@ -1,7 +1,7 @@
 import Dependencies._
 import CompilerOptions._
 
-lazy val mainScalaVersion = "2.11.8"
+lazy val mainScalaVersion = "2.12.4"
 lazy val orgName = "ly.analogical"
 
 def buildSettings = inThisBuild(
@@ -21,21 +21,30 @@ lazy val testSettings = Seq(
   fork in Test := true
 )
 
-lazy val commonSettings =
+lazy val baseSettings =
   testSettings ++
-  CompilerOptions.flags ++ 
+  CompilerOptions.flags ++
   buildSettings
 
 lazy val root = (project in file("."))
-  .settings(commonSettings)
+  .settings(baseSettings)
   .settings(
     name := "scaleda",
     description := "Exploratory Data Analysis in Scala",
   )
   .aggregate(datasource)
+lazy val common = (project in file("scaleda-common"))
+  .settings(baseSettings)
+  .settings(
+    name := "scaleda-common",
+    description := "Commons/utils for scaleda",
+    libraryDependencies ++= commonDependencies,
+    coverageMinimum := 100,
+    coverageFailOnMinimum := true
+  )
 
 lazy val datasource = (project in file("scaleda-datasource"))
-  .settings(commonSettings)
+  .settings(baseSettings)
   .settings(
     name := "scaleda-datasource",
     description := "Datasource interaction for scaleda",
@@ -44,3 +53,4 @@ lazy val datasource = (project in file("scaleda-datasource"))
     coverageMinimum := 100,
     coverageFailOnMinimum := true
   )
+  .dependsOn(common)
