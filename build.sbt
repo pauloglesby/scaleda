@@ -4,6 +4,11 @@ import CompilerOptions._
 lazy val mainScalaVersion = "2.12.4"
 lazy val orgName = "ly.analogical"
 
+resolvers ++= Seq(
+  Resolver.sonatypeRepo("releases"),
+  Resolver.sonatypeRepo("snapshots")
+)
+
 def buildSettings = inThisBuild(
   Seq(
     organization := orgName,
@@ -21,10 +26,18 @@ lazy val testSettings = Seq(
   fork in Test := true
 )
 
+lazy val coverageSettings = Seq(
+  coverageEnabled.in(Test, test) := true,
+  coverageMinimum := 100,
+  coverageFailOnMinimum := true
+)
+
 lazy val baseSettings =
   testSettings ++
   CompilerOptions.flags ++
   buildSettings
+
+lazy val mainAndTest = "compile->compile;test->test"
 
 lazy val root = (project in file("."))
   .settings(baseSettings)
@@ -32,25 +45,24 @@ lazy val root = (project in file("."))
     name := "scaleda",
     description := "Exploratory Data Analysis in Scala",
   )
-  .aggregate(datasource)
+  .aggregate(common, datasource)
+
 lazy val common = (project in file("scaleda-common"))
   .settings(baseSettings)
+  .settings(coverageSettings)
   .settings(
     name := "scaleda-common",
     description := "Commons/utils for scaleda",
-    libraryDependencies ++= commonDependencies,
-    coverageMinimum := 100,
-    coverageFailOnMinimum := true
+    libraryDependencies ++= commonDependencies
   )
 
 lazy val datasource = (project in file("scaleda-datasource"))
   .settings(baseSettings)
+  .settings(coverageSettings)
   .settings(
     name := "scaleda-datasource",
     description := "Datasource interaction for scaleda",
     libraryDependencies ++= datasourceDependencies,
-    version := "0.0.1-SNAPSHOT",
-    coverageMinimum := 100,
-    coverageFailOnMinimum := true
+    version := "0.0.1-SNAPSHOT"
   )
-  .dependsOn(common)
+  .dependsOn(common % mainAndTest)
