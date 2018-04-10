@@ -45,7 +45,7 @@ lazy val root = (project in file("."))
     name := "scaleda",
     description := "Exploratory Data Analysis in Scala",
   )
-  .aggregate(common, datasource)
+  .aggregate(common, datasource, stata)
 
 lazy val common = (project in file("scaleda-common"))
   .settings(baseSettings)
@@ -66,3 +66,14 @@ lazy val datasource = (project in file("scaleda-datasource"))
     version := "0.0.1-SNAPSHOT"
   )
   .dependsOn(common % mainAndTest)
+
+lazy val stata = (project in file("scaleda-stata"))
+  .settings(baseSettings)
+  .settings(coverageSettings)
+  .settings(
+    name := "scaleda-stata",
+    description := "Stata compatibility module for scaleda",
+    libraryDependencies ++= stataDependencies,
+    version := "0.0.1-SNAPSHOT"
+  )
+  .dependsOn(common, datasource)
