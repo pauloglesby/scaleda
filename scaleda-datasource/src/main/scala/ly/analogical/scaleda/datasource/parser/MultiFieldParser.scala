@@ -36,6 +36,11 @@ object MultiFieldParser {
 
   }
 
+  implicit class EitherThrowableOps[A](either: Either[Throwable, A]) {
+    def toMultiFieldParserResult(field: Field): Result[A] =
+      either.leftMap(t => MultiFieldParser.Error.NotParsable(field, t.getMessage))
+  }
+
   def apply[A](implicit dec: MultiFieldParser[A]): MultiFieldParser[A] = dec
 
   def instance[A](ofFields: Int)(f: Seq[Field] => Result[A]): MultiFieldParser[A] = new MultiFieldParser[A] {

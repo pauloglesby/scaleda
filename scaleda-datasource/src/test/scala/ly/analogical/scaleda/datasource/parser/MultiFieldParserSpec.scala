@@ -108,6 +108,15 @@ class MultiFieldParserSpec extends BaseSpec with GeneratorDrivenPropertyChecks w
 
     }
 
+    "operating on an interim result of `Either[Throwable, A].left` should convert to left `Result` of `Error.NotParsable`" in {
+      val throwable = new Throwable("blah")
+      throwable.asLeft.toMultiFieldParserResult("field").left.value should equal(Error.NotParsable("field", "blah"))
+    }
+
+    "operating on an interim result of `Either[Throwable, A].right` should convert to right `Result` of `A`" in {
+      "yay!".asRight[Throwable].toMultiFieldParserResult("yay!").right.value should equal("yay!")
+    }
+
   }
 
 }
